@@ -1,0 +1,10 @@
+{
+  "name": "PinkySnap Cute Photobooth",
+  "description": "A dreamy pink photobooth app with mirrored selfie camera, vintage & pastel filters, real-time animated stickers, and classic photo strip maker.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
