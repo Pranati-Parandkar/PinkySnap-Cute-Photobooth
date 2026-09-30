@@ -1,20 +1,45 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# 💗 PinkySnap - Cute Photobooth
 
-# Run and deploy your AI Studio app
+PinkySnap is a fun and interactive web-based photobooth that lets users capture photos, apply cute filters, add stickers, and create personalized photo strips.
 
-This contains everything you need to run your app locally.
+## ✨ Features
 
-View your app in AI Studio: https://ai.studio/apps/05f20c70-3ab8-48c0-b446-b285ec4589d8
+- 📷 Live camera capture
+- 🎀 Multiple photo filters and presets
+- 💕 Cute stickers and decorations
+- ⏱️ Manual and timer-based photo capture
+- 🪞 Mirror camera mode
+- 🖼️ 4-cut photo strip creation
+- 📐 Multiple photo strip layouts
+- 🎨 Customizable frame backgrounds
+- ✍️ Add captions and date stamps
+- 💾 Save and copy generated photos
+- 🌸 Cute pastel and purikura-inspired interface
 
-## Run Locally
+## 🛠️ Tech Stack
 
-**Prerequisites:**  Node.js
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- HTML5 Canvas
+- Web Camera API
 
+## 🎀 How It Works
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+1. Open PinkySnap and allow camera access.
+2. Choose a filter or preset.
+3. Select a capture mode.
+4. Capture your photos.
+5. Add stickers and decorations.
+6. Choose a photo strip layout and frame.
+7. Add a caption or date stamp.
+8. Save or copy your finished photo strip.
+
+## 🚀 Getting Started
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/YOUR-USERNAME/PinkySnap-Cute-Photobooth.git
+cd PinkySnap-Cute-Photobooth
