@@ -145,7 +145,7 @@ export const StickerSidebar: React.FC<StickerSidebarProps> = ({
   };
 
   return (
-    <aside className="w-full h-full flex flex-col bg-white/95 backdrop-blur-md border border-pink-200/90 rounded-3xl p-3 shadow-md overflow-hidden">
+    <aside className="w-full h-full flex flex-col bg-white/95 backdrop-blur-md border border-pink-200/90 rounded-3xl p-2 sm:p-3 shadow-md overflow-hidden">
       {/* 1. PERSISTENT EDIT PANEL (Stays active until user clicks Done / Move On) */}
       {selectedSticker && selectedTemplate && (
         <div className="bg-pink-50/95 border-2 border-pink-300 rounded-2xl p-2.5 mb-2 shrink-0 shadow-sm animate-fadeIn">
@@ -416,7 +416,7 @@ export const StickerSidebar: React.FC<StickerSidebarProps> = ({
       </div>
 
       {/* Stickers Grid */}
-      <div className="flex-1 overflow-y-auto grid grid-cols-3 gap-2 pr-0.5 no-scrollbar">
+      <div className="flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 gap-1.5 sm:gap-2 pr-0.5 no-scrollbar">
         {filteredStickers.map((sticker) => {
           return (
             <button

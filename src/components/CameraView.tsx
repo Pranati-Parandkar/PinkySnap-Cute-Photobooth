@@ -416,23 +416,23 @@ export const CameraView: React.FC<CameraViewProps> = ({
 
   return (
     <div className="flex flex-col items-center w-full">
-      {/* Top Settings Toolbar: Mode & Trigger Selection */}
-      <div className="w-full flex items-center justify-between gap-2 mb-2 px-1">
+      {/* Top Settings Toolbar: Mode & Trigger Selection (Positioned right at the top on mobile) */}
+      <div className="w-full flex flex-wrap sm:flex-nowrap items-center justify-between gap-1.5 mb-2 px-0.5">
         {/* Strip Layout: 4-Cut vs Single */}
-        <div className="flex items-center gap-1 p-1 bg-white/95 backdrop-blur-md rounded-2xl border border-pink-200/90 shadow-sm">
+        <div className="flex items-center gap-0.5 sm:gap-1 p-0.5 sm:p-1 bg-white/95 backdrop-blur-md rounded-2xl border border-pink-200/90 shadow-sm">
           <button
             onClick={() => {
               soundEffects.playStickerPop();
               setPhotoboothMode('strip4');
               setManualShots([]);
             }}
-            className={`flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
               photoboothMode === 'strip4'
                 ? 'bg-gradient-to-r from-pink-500 to-rose-400 text-white shadow-sm'
                 : 'text-pink-800 hover:text-pink-900'
             }`}
           >
-            <Flame className="w-3.5 h-3.5" />
+            <Flame className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             <span>4-Cut Strip</span>
           </button>
 
@@ -442,32 +442,32 @@ export const CameraView: React.FC<CameraViewProps> = ({
               setPhotoboothMode('single');
               setManualShots([]);
             }}
-            className={`flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
               photoboothMode === 'single'
                 ? 'bg-gradient-to-r from-pink-500 to-rose-400 text-white shadow-sm'
                 : 'text-pink-800 hover:text-pink-900'
             }`}
           >
-            <Camera className="w-3.5 h-3.5" />
+            <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             <span>Single Snap</span>
           </button>
         </div>
 
         {/* Shutter Click Method: Manual vs Auto Timer */}
-        <div className="flex items-center gap-1 p-1 bg-white/95 backdrop-blur-md rounded-2xl border border-pink-200/90 shadow-sm">
+        <div className="flex items-center gap-0.5 sm:gap-1 p-0.5 sm:p-1 bg-white/95 backdrop-blur-md rounded-2xl border border-pink-200/90 shadow-sm">
           <button
             onClick={() => {
               soundEffects.playStickerPop();
               setShutterTriggerType('manual');
             }}
-            className={`flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1 px-2 sm:px-3 py-1 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
               shutterTriggerType === 'manual'
                 ? 'bg-gradient-to-r from-pink-500 to-rose-400 text-white shadow-sm'
                 : 'text-pink-800 hover:text-pink-900'
             }`}
           >
-            <Hand className="w-3.5 h-3.5" />
-            <span>Manual Click</span>
+            <Hand className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+            <span>Manual</span>
           </button>
 
           <button
@@ -475,14 +475,14 @@ export const CameraView: React.FC<CameraViewProps> = ({
               soundEffects.playStickerPop();
               setShutterTriggerType('timer');
             }}
-            className={`flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1 px-2 sm:px-3 py-1 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
               shutterTriggerType === 'timer'
                 ? 'bg-gradient-to-r from-pink-500 to-rose-400 text-white shadow-sm'
                 : 'text-pink-800 hover:text-pink-900'
             }`}
           >
-            <Timer className="w-3.5 h-3.5" />
-            <span>Auto Timer</span>
+            <Timer className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+            <span>Auto</span>
           </button>
 
           {shutterTriggerType === 'timer' && (
@@ -494,7 +494,7 @@ export const CameraView: React.FC<CameraViewProps> = ({
                     soundEffects.playStickerPop();
                     setTimerSeconds(sec);
                   }}
-                  className={`px-1.5 py-0.5 rounded-lg text-[11px] font-bold cursor-pointer ${
+                  className={`px-1 py-0.5 rounded-lg text-[10px] sm:text-[11px] font-bold cursor-pointer ${
                     timerSeconds === sec
                       ? 'bg-pink-100 text-pink-700'
                       : 'text-slate-500 hover:text-pink-600'
@@ -515,22 +515,22 @@ export const CameraView: React.FC<CameraViewProps> = ({
               setIsMirrored((prev) => !prev);
             }}
             title={isMirrored ? 'Mirrored selfie: ON' : 'Mirrored selfie: OFF'}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold border transition-all shadow-sm cursor-pointer ${
+            className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-xl text-[11px] sm:text-xs font-bold border transition-all shadow-sm cursor-pointer ${
               isMirrored
                 ? 'bg-pink-500 text-white border-pink-500'
                 : 'bg-white/95 text-pink-700 border-pink-200 hover:bg-pink-50'
             }`}
           >
-            <FlipHorizontal className="w-3.5 h-3.5" />
+            <FlipHorizontal className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             <span>Mirror</span>
           </button>
 
           <button
             onClick={() => fileInputRef.current?.click()}
             title="Upload photo from device"
-            className="p-1.5 rounded-xl bg-white/95 text-pink-700 border border-pink-200 hover:bg-pink-50 transition-colors shadow-sm cursor-pointer"
+            className="p-1 sm:p-1.5 rounded-xl bg-white/95 text-pink-700 border border-pink-200 hover:bg-pink-50 transition-colors shadow-sm cursor-pointer"
           >
-            <Upload className="w-4 h-4" />
+            <Upload className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
           <input
             ref={fileInputRef}

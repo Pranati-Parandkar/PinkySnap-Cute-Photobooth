@@ -17,7 +17,6 @@ import { Wand2, Camera as CameraIcon, Sparkles } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'camera' | 'strip' | 'gallery'>('camera');
-  const [mobileStudioPanel, setMobileStudioPanel] = useState<'filters' | 'camera' | 'stickers'>('camera');
   const [currentFilterId, setCurrentFilterId] = useState<FilterId>('pink_bubblegum');
 
   // Stickers placed on the camera/photo
@@ -161,7 +160,7 @@ export default function App() {
   const activeFilter = getFilterById(currentFilterId);
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-pink-leopard flex flex-col font-sans selection:bg-pink-300 selection:text-pink-900 text-slate-800">
+    <div className="min-h-screen lg:h-screen w-screen overflow-y-auto lg:overflow-hidden bg-pink-leopard flex flex-col font-sans selection:bg-pink-300 selection:text-pink-900 text-slate-800">
       {/* Top Header */}
       <Header
         activeTab={activeTab}
@@ -176,57 +175,14 @@ export default function App() {
         hasPhotos={capturedShots.length > 0}
       />
 
-      {/* Main Studio Viewport (Non-scrolling!) */}
-      <main className="flex-1 w-full max-w-[1440px] mx-auto px-3 py-2 overflow-hidden flex flex-col">
+      {/* Main Studio Viewport */}
+      <main className="flex-1 w-full max-w-[1440px] mx-auto px-2 sm:px-3 py-2 overflow-y-auto lg:overflow-hidden flex flex-col">
         {activeTab === 'camera' ? (
           <>
-            {/* Mobile panel selector buttons (visible only on small screens) */}
-            <div className="lg:hidden flex items-center justify-center gap-1.5 pb-2 shrink-0">
-              <button
-                onClick={() => setMobileStudioPanel('filters')}
-                className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                  mobileStudioPanel === 'filters'
-                    ? 'bg-pink-500 text-white shadow-sm'
-                    : 'bg-white/80 text-pink-700'
-                }`}
-              >
-                <Wand2 className="w-3.5 h-3.5" />
-                <span>Filters</span>
-              </button>
-
-              <button
-                onClick={() => setMobileStudioPanel('camera')}
-                className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                  mobileStudioPanel === 'camera'
-                    ? 'bg-pink-500 text-white shadow-sm'
-                    : 'bg-white/80 text-pink-700'
-                }`}
-              >
-                <CameraIcon className="w-3.5 h-3.5" />
-                <span>Booth</span>
-              </button>
-
-              <button
-                onClick={() => setMobileStudioPanel('stickers')}
-                className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                  mobileStudioPanel === 'stickers'
-                    ? 'bg-pink-500 text-white shadow-sm'
-                    : 'bg-white/80 text-pink-700'
-                }`}
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Stickers</span>
-              </button>
-            </div>
-
-            {/* 3-COLUMN STUDIO LAYOUT (Non-scrolling, Filters on Left, Webcam in Center, Stickers on Right) */}
-            <div className="flex-1 w-full flex items-stretch gap-3 overflow-hidden min-h-0">
+            {/* DESKTOP 3-COLUMN STUDIO LAYOUT (lg and up - UNCHANGED) */}
+            <div className="hidden lg:flex flex-1 w-full items-stretch gap-3 overflow-hidden min-h-0">
               {/* Left Column: Aesthetic Filters */}
-              <div
-                className={`w-64 xl:w-72 shrink-0 h-full ${
-                  mobileStudioPanel === 'filters' ? 'flex' : 'hidden lg:flex'
-                }`}
-              >
+              <div className="w-64 xl:w-72 shrink-0 h-full">
                 <FilterSidebar
                   currentFilterId={currentFilterId}
                   onSelectFilter={setCurrentFilterId}
@@ -234,11 +190,7 @@ export default function App() {
               </div>
 
               {/* Center Column: Photobooth Frame & Webcam */}
-              <div
-                className={`flex-1 min-w-0 h-full flex flex-col items-center justify-center overflow-hidden ${
-                  mobileStudioPanel === 'camera' ? 'flex' : 'hidden lg:flex'
-                }`}
-              >
+              <div className="flex-1 min-w-0 h-full flex flex-col items-center justify-center overflow-hidden">
                 <div className="w-full max-w-2xl flex flex-col items-center justify-center h-full">
                   <CameraView
                     filter={activeFilter}
@@ -252,11 +204,7 @@ export default function App() {
               </div>
 
               {/* Right Column: Kawaii Stickers & Edit Controls */}
-              <div
-                className={`w-76 xl:w-84 shrink-0 h-full ${
-                  mobileStudioPanel === 'stickers' ? 'flex' : 'hidden lg:flex'
-                }`}
-              >
+              <div className="w-76 xl:w-84 shrink-0 h-full">
                 <StickerSidebar
                   stickers={stickers}
                   onUpdateStickers={setStickers}
@@ -266,6 +214,45 @@ export default function App() {
                   onClearStickers={handleClearStickers}
                   onAddCutePreset={handleAddCutePreset}
                 />
+              </div>
+            </div>
+
+            {/* MOBILE LAYOUT (< lg): Options & Preview on Top, then Divided Filters & Stickers */}
+            <div className="flex lg:hidden flex-col w-full gap-3 pb-8">
+              {/* 1. Photobooth Options & Live Preview Cabinet (at the top!) */}
+              <div className="w-full">
+                <CameraView
+                  filter={activeFilter}
+                  stickers={stickers}
+                  onUpdateStickers={setStickers}
+                  selectedStickerId={selectedStickerId}
+                  onSelectSticker={setSelectedStickerId}
+                  onPhotosCaptured={handlePhotosCaptured}
+                />
+              </div>
+
+              {/* 2. Divided Filters & Stickers Section directly underneath: FILTER | STICKER */}
+              <div className="w-full grid grid-cols-2 gap-2 h-[380px] sm:h-[420px]">
+                {/* Left Column: FILTER */}
+                <div className="h-full overflow-hidden">
+                  <FilterSidebar
+                    currentFilterId={currentFilterId}
+                    onSelectFilter={setCurrentFilterId}
+                  />
+                </div>
+
+                {/* Right Column: STICKER */}
+                <div className="h-full overflow-hidden">
+                  <StickerSidebar
+                    stickers={stickers}
+                    onUpdateStickers={setStickers}
+                    selectedId={selectedStickerId}
+                    onSelectSticker={setSelectedStickerId}
+                    onAddSticker={handleAddSticker}
+                    onClearStickers={handleClearStickers}
+                    onAddCutePreset={handleAddCutePreset}
+                  />
+                </div>
               </div>
             </div>
           </>
