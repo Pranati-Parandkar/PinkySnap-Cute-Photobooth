@@ -147,7 +147,7 @@ export const PhotoStripEditor: React.FC<PhotoStripEditorProps> = ({
           <div className="w-full flex items-center justify-between text-xs text-pink-600 mb-3 font-semibold px-1">
             <span className="flex items-center gap-1">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Purikura Photo Strip</span>
+              <span>Photo Strip</span>
             </span>
             <span className="text-slate-400">High-Res Print Quality</span>
           </div>

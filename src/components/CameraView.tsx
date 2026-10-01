@@ -315,7 +315,7 @@ export const CameraView: React.FC<CameraViewProps> = ({
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 42px "Fredoka", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('♡ PURIKURA SELFIE DEMO ♡', 600, 720);
+      ctx.fillText('♡ SELFIE DEMO ♡', 600, 720);
       ctx.font = '600 24px "Plus Jakarta Sans", sans-serif';
       ctx.fillText('Decorate with stickers & snap!', 600, 770);
 
@@ -832,7 +832,7 @@ export const CameraView: React.FC<CameraViewProps> = ({
           <div className="px-4 py-0.5 rounded-full bg-white/90 border border-pink-300 shadow-inner flex items-center gap-1.5">
             <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
             <span className="font-heading font-bold text-xs tracking-wider bg-gradient-to-r from-pink-600 to-rose-500 bg-clip-text text-transparent uppercase">
-              Purikura Photo Studio
+              PHOTBOOTH
             </span>
             <Sparkles className="w-3.5 h-3.5 text-pink-500 animate-sparkle" />
           </div>

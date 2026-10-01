@@ -37,7 +37,7 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
             </div>
             <div>
               <h2 className="font-heading text-lg font-bold text-pink-900 leading-tight">
-                My Purikura Scrapbook
+                My Photo Scrapbook
               </h2>
               <p className="text-xs text-pink-600">
                 {savedStrips.length} {savedStrips.length === 1 ? 'memory' : 'memories'} saved
