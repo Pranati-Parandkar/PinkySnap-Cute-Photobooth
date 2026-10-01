@@ -65,7 +65,7 @@ export const Header: React.FC<HeaderProps> = ({
               setActiveTab('strip');
             }}
             disabled={!hasPhotos}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
+            className={`flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
               activeTab === 'strip'
                 ? 'bg-white text-pink-600 shadow-sm shadow-pink-200'
                 : hasPhotos
@@ -74,12 +74,13 @@ export const Header: React.FC<HeaderProps> = ({
             }`}
           >
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Decorate & Strip</span>
+            <span className="hidden sm:inline">Decorate & </span>
+            <span>Strip</span>
           </button>
         </nav>
 
-        {/* Zone 3: Actions (Sound & Saved Gallery) */}
-        <div className="flex items-center gap-2">
+        {/* Zone 3: Actions (Sound & Saved Gallery) - Visible on Desktop, Moved to symmetric box on Mobile */}
+        <div className="hidden lg:flex items-center gap-2">
           <button
             onClick={handleToggleSound}
             title={isMuted ? 'Unmute sounds' : 'Mute sounds'}
