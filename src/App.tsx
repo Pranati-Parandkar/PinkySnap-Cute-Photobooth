@@ -160,7 +160,7 @@ export default function App() {
   const activeFilter = getFilterById(currentFilterId);
 
   return (
-    <div className="min-h-screen lg:h-screen w-screen overflow-y-auto lg:overflow-hidden bg-pink-leopard flex flex-col font-sans selection:bg-pink-300 selection:text-pink-900 text-slate-800">
+    <div className="min-h-screen lg:h-screen w-full max-w-full overflow-x-hidden overflow-y-auto lg:overflow-hidden bg-pink-leopard flex flex-col font-sans selection:bg-pink-300 selection:text-pink-900 text-slate-800">
       {/* Top Header */}
       <Header
         activeTab={activeTab}
@@ -176,7 +176,7 @@ export default function App() {
       />
 
       {/* Main Studio Viewport */}
-      <main className="flex-1 w-full max-w-[1440px] mx-auto px-2 sm:px-3 py-2 overflow-y-auto lg:overflow-hidden flex flex-col">
+      <main className="flex-1 w-full max-w-[1440px] mx-auto px-2 sm:px-3 py-2 overflow-x-hidden overflow-y-auto lg:overflow-hidden flex flex-col">
         {activeTab === 'camera' ? (
           <>
             {/* DESKTOP 3-COLUMN STUDIO LAYOUT (lg and up - UNCHANGED) */}
@@ -199,6 +199,8 @@ export default function App() {
                     selectedStickerId={selectedStickerId}
                     onSelectSticker={setSelectedStickerId}
                     onPhotosCaptured={handlePhotosCaptured}
+                    onOpenGallery={() => setIsGalleryOpen(true)}
+                    savedCount={savedStrips.length}
                   />
                 </div>
               </div>
@@ -228,6 +230,8 @@ export default function App() {
                   selectedStickerId={selectedStickerId}
                   onSelectSticker={setSelectedStickerId}
                   onPhotosCaptured={handlePhotosCaptured}
+                  onOpenGallery={() => setIsGalleryOpen(true)}
+                  savedCount={savedStrips.length}
                 />
               </div>
 

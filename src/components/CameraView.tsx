@@ -17,6 +17,9 @@ import {
   RotateCcw,
   Check,
   Heart,
+  Volume2,
+  VolumeX,
+  Image as ImageIcon,
 } from 'lucide-react';
 
 interface CameraViewProps {
@@ -26,6 +29,8 @@ interface CameraViewProps {
   selectedStickerId: string | null;
   onSelectSticker: (id: string | null) => void;
   onPhotosCaptured: (shots: CapturedShot[], mode: PhotoboothMode) => void;
+  onOpenGallery?: () => void;
+  savedCount?: number;
 }
 
 export const CameraView: React.FC<CameraViewProps> = ({
@@ -35,6 +40,8 @@ export const CameraView: React.FC<CameraViewProps> = ({
   selectedStickerId,
   onSelectSticker,
   onPhotosCaptured,
+  onOpenGallery,
+  savedCount,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -54,6 +61,17 @@ export const CameraView: React.FC<CameraViewProps> = ({
   // Trigger method: Manual Click vs Auto Timer
   const [shutterTriggerType, setShutterTriggerType] = useState<'manual' | 'timer'>('timer');
   const [timerSeconds, setTimerSeconds] = useState<number>(3); // 3s, 5s, 10s
+
+  // Cute Sound Toggle (for mobile top bar placement)
+  const [isMuted, setIsMuted] = useState(soundEffects.isMuted);
+
+  const handleToggleSound = () => {
+    const muted = soundEffects.toggleMute();
+    setIsMuted(muted);
+    if (!muted) {
+      soundEffects.playStickerPop();
+    }
+  };
 
   // Animations & countdown
   const [isCountingDown, setIsCountingDown] = useState<boolean>(false);
@@ -416,23 +434,25 @@ export const CameraView: React.FC<CameraViewProps> = ({
 
   return (
     <div className="flex flex-col items-center w-full">
-      {/* Top Settings Toolbar: Mode & Trigger Selection (Positioned right at the top on mobile) */}
-      <div className="w-full flex flex-wrap sm:flex-nowrap items-center justify-between gap-1.5 mb-2 px-0.5">
+      {/* ============================================================== */}
+      {/* 1. DESKTOP TOOLBAR (lg and up - 100% UNCHANGED)                 */}
+      {/* ============================================================== */}
+      <div className="hidden lg:flex w-full items-center justify-between gap-2 mb-2 px-1">
         {/* Strip Layout: 4-Cut vs Single */}
-        <div className="flex items-center gap-0.5 sm:gap-1 p-0.5 sm:p-1 bg-white/95 backdrop-blur-md rounded-2xl border border-pink-200/90 shadow-sm">
+        <div className="flex items-center gap-1 p-1 bg-white/95 backdrop-blur-md rounded-2xl border border-pink-200/90 shadow-sm">
           <button
             onClick={() => {
               soundEffects.playStickerPop();
               setPhotoboothMode('strip4');
               setManualShots([]);
             }}
-            className={`flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               photoboothMode === 'strip4'
                 ? 'bg-gradient-to-r from-pink-500 to-rose-400 text-white shadow-sm'
                 : 'text-pink-800 hover:text-pink-900'
             }`}
           >
-            <Flame className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+            <Flame className="w-3.5 h-3.5" />
             <span>4-Cut Strip</span>
           </button>
 
@@ -442,32 +462,32 @@ export const CameraView: React.FC<CameraViewProps> = ({
               setPhotoboothMode('single');
               setManualShots([]);
             }}
-            className={`flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               photoboothMode === 'single'
                 ? 'bg-gradient-to-r from-pink-500 to-rose-400 text-white shadow-sm'
                 : 'text-pink-800 hover:text-pink-900'
             }`}
           >
-            <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+            <Camera className="w-3.5 h-3.5" />
             <span>Single Snap</span>
           </button>
         </div>
 
         {/* Shutter Click Method: Manual vs Auto Timer */}
-        <div className="flex items-center gap-0.5 sm:gap-1 p-0.5 sm:p-1 bg-white/95 backdrop-blur-md rounded-2xl border border-pink-200/90 shadow-sm">
+        <div className="flex items-center gap-1 p-1 bg-white/95 backdrop-blur-md rounded-2xl border border-pink-200/90 shadow-sm">
           <button
             onClick={() => {
               soundEffects.playStickerPop();
               setShutterTriggerType('manual');
             }}
-            className={`flex items-center gap-1 px-2 sm:px-3 py-1 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               shutterTriggerType === 'manual'
                 ? 'bg-gradient-to-r from-pink-500 to-rose-400 text-white shadow-sm'
                 : 'text-pink-800 hover:text-pink-900'
             }`}
           >
-            <Hand className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-            <span>Manual</span>
+            <Hand className="w-3.5 h-3.5" />
+            <span>Manual Click</span>
           </button>
 
           <button
@@ -475,14 +495,14 @@ export const CameraView: React.FC<CameraViewProps> = ({
               soundEffects.playStickerPop();
               setShutterTriggerType('timer');
             }}
-            className={`flex items-center gap-1 px-2 sm:px-3 py-1 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               shutterTriggerType === 'timer'
                 ? 'bg-gradient-to-r from-pink-500 to-rose-400 text-white shadow-sm'
                 : 'text-pink-800 hover:text-pink-900'
             }`}
           >
-            <Timer className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-            <span>Auto</span>
+            <Timer className="w-3.5 h-3.5" />
+            <span>Auto Timer</span>
           </button>
 
           {shutterTriggerType === 'timer' && (
@@ -494,7 +514,7 @@ export const CameraView: React.FC<CameraViewProps> = ({
                     soundEffects.playStickerPop();
                     setTimerSeconds(sec);
                   }}
-                  className={`px-1 py-0.5 rounded-lg text-[10px] sm:text-[11px] font-bold cursor-pointer ${
+                  className={`px-1.5 py-0.5 rounded-lg text-[11px] font-bold cursor-pointer ${
                     timerSeconds === sec
                       ? 'bg-pink-100 text-pink-700'
                       : 'text-slate-500 hover:text-pink-600'
@@ -515,22 +535,22 @@ export const CameraView: React.FC<CameraViewProps> = ({
               setIsMirrored((prev) => !prev);
             }}
             title={isMirrored ? 'Mirrored selfie: ON' : 'Mirrored selfie: OFF'}
-            className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-xl text-[11px] sm:text-xs font-bold border transition-all shadow-sm cursor-pointer ${
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold border transition-all shadow-sm cursor-pointer ${
               isMirrored
                 ? 'bg-pink-500 text-white border-pink-500'
                 : 'bg-white/95 text-pink-700 border-pink-200 hover:bg-pink-50'
             }`}
           >
-            <FlipHorizontal className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+            <FlipHorizontal className="w-3.5 h-3.5" />
             <span>Mirror</span>
           </button>
 
           <button
             onClick={() => fileInputRef.current?.click()}
             title="Upload photo from device"
-            className="p-1 sm:p-1.5 rounded-xl bg-white/95 text-pink-700 border border-pink-200 hover:bg-pink-50 transition-colors shadow-sm cursor-pointer"
+            className="p-1.5 rounded-xl bg-white/95 text-pink-700 border border-pink-200 hover:bg-pink-50 transition-colors shadow-sm cursor-pointer"
           >
-            <Upload className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <Upload className="w-4 h-4" />
           </button>
           <input
             ref={fileInputRef}
@@ -539,6 +559,172 @@ export const CameraView: React.FC<CameraViewProps> = ({
             className="hidden"
             onChange={handleUploadImage}
           />
+        </div>
+      </div>
+
+      {/* ============================================================== */}
+      {/* 2. MOBILE TOOLBAR (< lg): 2 rows of 2 equal, symmetric boxes   */}
+      {/*    (Volume and Gallery moved here as drawn, zero empty space)  */}
+      {/* ============================================================== */}
+      <div className="flex lg:hidden flex-col w-full gap-2 mb-2">
+        {/* Row 1: [ Strip Mode (50%) ]  <--->  [ Volume & Gallery (50%) ] */}
+        <div className="w-full grid grid-cols-2 gap-2">
+          {/* Box 1 (Left 50%): 4-Cut Strip vs Single Snap */}
+          <div className="w-full flex items-center justify-between p-1 bg-white/95 backdrop-blur-md rounded-2xl border border-pink-200/90 shadow-sm">
+            <button
+              onClick={() => {
+                soundEffects.playStickerPop();
+                setPhotoboothMode('strip4');
+                setManualShots([]);
+              }}
+              className={`flex-1 flex items-center justify-center gap-1 py-1 px-1 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
+                photoboothMode === 'strip4'
+                  ? 'bg-gradient-to-r from-pink-500 to-rose-400 text-white shadow-sm'
+                  : 'text-pink-800 hover:text-pink-900'
+              }`}
+            >
+              <Flame className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+              <span className="truncate">4-Cut Strip</span>
+            </button>
+
+            <button
+              onClick={() => {
+                soundEffects.playStickerPop();
+                setPhotoboothMode('single');
+                setManualShots([]);
+              }}
+              className={`flex-1 flex items-center justify-center gap-1 py-1 px-1 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
+                photoboothMode === 'single'
+                  ? 'bg-gradient-to-r from-pink-500 to-rose-400 text-white shadow-sm'
+                  : 'text-pink-800 hover:text-pink-900'
+              }`}
+            >
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+              <span className="truncate">Single Snap</span>
+            </button>
+          </div>
+
+          {/* Box 2 (Right 50% - Exactly where user drew green box & arrows): Volume & Gallery */}
+          <div className="w-full flex items-center justify-between p-1 bg-white/95 backdrop-blur-md rounded-2xl border border-pink-200/90 shadow-sm gap-1.5">
+            {/* Cute Sound Toggle */}
+            <button
+              onClick={handleToggleSound}
+              title={isMuted ? 'Unmute sounds' : 'Mute cute sounds'}
+              className={`flex-1 flex items-center justify-center gap-1 py-1 px-1.5 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
+                isMuted
+                  ? 'bg-pink-50 text-slate-500 border border-pink-100'
+                  : 'bg-pink-100/90 text-pink-700 border border-pink-200'
+              }`}
+            >
+              {isMuted ? <VolumeX className="w-3.5 h-3.5 text-slate-500 shrink-0" /> : <Volume2 className="w-3.5 h-3.5 text-pink-600 shrink-0" />}
+              <span className="truncate">{isMuted ? 'Muted' : 'Sound'}</span>
+            </button>
+
+            {/* Saved Gallery Button */}
+            <button
+              onClick={() => {
+                soundEffects.playStickerPop();
+                onOpenGallery?.();
+              }}
+              title="Open Saved Gallery"
+              className="flex-1 flex items-center justify-center gap-1 py-1 px-1.5 rounded-xl text-[11px] sm:text-xs font-bold bg-gradient-to-r from-pink-500 to-rose-400 text-white shadow-sm hover:from-pink-600 hover:to-rose-500 active:scale-95 transition-all cursor-pointer"
+            >
+              <ImageIcon className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">Gallery</span>
+              {savedCount !== undefined && savedCount > 0 && (
+                <span className="px-1 py-0.2 bg-white text-pink-600 font-bold text-[9px] rounded-full">
+                  {savedCount}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Row 2: [ Shutter Click / Timer (50%) ]  <--->  [ Mirror & Upload (50%) ] */}
+        <div className="w-full grid grid-cols-2 gap-2">
+          {/* Box 3 (Left 50%): Manual vs Auto Timer */}
+          <div className="w-full flex items-center justify-between p-1 bg-white/95 backdrop-blur-md rounded-2xl border border-pink-200/90 shadow-sm">
+            <button
+              onClick={() => {
+                soundEffects.playStickerPop();
+                setShutterTriggerType('manual');
+              }}
+              className={`flex-1 flex items-center justify-center gap-1 py-1 px-1 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
+                shutterTriggerType === 'manual'
+                  ? 'bg-gradient-to-r from-pink-500 to-rose-400 text-white shadow-sm'
+                  : 'text-pink-800 hover:text-pink-900'
+              }`}
+            >
+              <Hand className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+              <span className="truncate">Manual</span>
+            </button>
+
+            <button
+              onClick={() => {
+                soundEffects.playStickerPop();
+                setShutterTriggerType('timer');
+              }}
+              className={`flex-1 flex items-center justify-center gap-1 py-1 px-1 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
+                shutterTriggerType === 'timer'
+                  ? 'bg-gradient-to-r from-pink-500 to-rose-400 text-white shadow-sm'
+                  : 'text-pink-800 hover:text-pink-900'
+              }`}
+            >
+              <Timer className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+              <span className="truncate">Auto</span>
+            </button>
+
+            {shutterTriggerType === 'timer' && (
+              <div className="flex items-center gap-0.5 pl-1 border-l border-pink-200">
+                {[3, 5, 10].map((sec) => (
+                  <button
+                    key={sec}
+                    onClick={() => {
+                      soundEffects.playStickerPop();
+                      setTimerSeconds(sec);
+                    }}
+                    className={`px-1 py-0.5 rounded-md text-[10px] font-bold cursor-pointer ${
+                      timerSeconds === sec
+                        ? 'bg-pink-100 text-pink-700'
+                        : 'text-slate-500 hover:text-pink-600'
+                    }`}
+                  >
+                    {sec}s
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Box 4 (Right 50%): Mirror Selfie & Upload Photo */}
+          <div className="w-full flex items-center justify-between p-1 bg-white/95 backdrop-blur-md rounded-2xl border border-pink-200/90 shadow-sm gap-1.5">
+            {/* Mirror Toggle */}
+            <button
+              onClick={() => {
+                soundEffects.playStickerPop();
+                setIsMirrored((prev) => !prev);
+              }}
+              title={isMirrored ? 'Mirrored selfie: ON' : 'Mirrored selfie: OFF'}
+              className={`flex-1 flex items-center justify-center gap-1 py-1 px-1.5 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
+                isMirrored
+                  ? 'bg-gradient-to-r from-pink-500 to-rose-400 text-white shadow-sm'
+                  : 'bg-pink-50 text-pink-700 hover:bg-pink-100'
+              }`}
+            >
+              <FlipHorizontal className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">Mirror</span>
+            </button>
+
+            {/* Upload Photo */}
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              title="Upload photo from device"
+              className="flex-1 flex items-center justify-center gap-1 py-1 px-1.5 rounded-xl text-[11px] sm:text-xs font-bold bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 transition-colors shadow-2xs cursor-pointer"
+            >
+              <Upload className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">Upload</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -555,7 +741,7 @@ export const CameraView: React.FC<CameraViewProps> = ({
           <div className="px-4 py-0.5 rounded-full bg-white/90 border border-pink-300 shadow-inner flex items-center gap-1.5">
             <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
             <span className="font-heading font-bold text-xs tracking-wider bg-gradient-to-r from-pink-600 to-rose-500 bg-clip-text text-transparent uppercase">
-              Photo Studio
+              PHOTOBOOTH
             </span>
             <Sparkles className="w-3.5 h-3.5 text-pink-500 animate-sparkle" />
           </div>
@@ -660,7 +846,7 @@ export const CameraView: React.FC<CameraViewProps> = ({
                 Enable Selfie Camera
               </h3>
               <p className="text-[11px] text-pink-200/90 max-w-xs mb-3">
-                Tap below to activate your selfie camera for real-time photobooth photos!
+                Tap below to activate your selfie camera for real-time purikura photos!
               </p>
 
               <div className="flex items-center gap-2">
