@@ -90,7 +90,7 @@ export const CameraView: React.FC<CameraViewProps> = ({
   const currentShotNumber = manualShots.length + 1;
 
   /**
-   * Camera initializer with multi-tier fallback
+   * Camera initializer with multi-tier fallback (Forces front camera on mobile)
    */
   const requestCameraAccess = useCallback(async (forcedFacing?: 'user' | 'environment', deviceId?: string) => {
     setIsRequestingPermission(true);
@@ -108,35 +108,72 @@ export const CameraView: React.FC<CameraViewProps> = ({
       return;
     }
 
-    const targetFacing = forcedFacing || cameraFacing;
+    const targetFacing: 'user' | 'environment' = forcedFacing || cameraFacing;
+
+    // First, try to discover devices and find the front camera if target is user
+    let resolvedDeviceId = deviceId;
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoInputs = devices.filter((d) => d.kind === 'videoinput');
+      if (videoInputs.length > 0) {
+        setAvailableDevices(videoInputs);
+        if (!resolvedDeviceId) {
+          if (targetFacing === 'user') {
+            const front = videoInputs.find((d) => {
+              const l = (d.label || '').toLowerCase();
+              return l.includes('front') || l.includes('user') || l.includes('selfie') || l.includes('facing front');
+            });
+            if (front) resolvedDeviceId = front.deviceId;
+          } else {
+            const back = videoInputs.find((d) => {
+              const l = (d.label || '').toLowerCase();
+              return l.includes('back') || l.includes('rear') || l.includes('environment') || l.includes('facing back');
+            });
+            if (back) resolvedDeviceId = back.deviceId;
+          }
+        }
+      }
+    } catch {
+      // ignore
+    }
 
     const constraintCandidates: MediaStreamConstraints[] = [];
 
-    if (deviceId) {
+    // Priority 1: Exact Device ID if we matched the front/back camera
+    if (resolvedDeviceId) {
       constraintCandidates.push({
-        video: { deviceId: { exact: deviceId } },
+        video: { deviceId: { exact: resolvedDeviceId } },
+        audio: false,
+      });
+      constraintCandidates.push({
+        video: { deviceId: resolvedDeviceId },
         audio: false,
       });
     }
 
-    constraintCandidates.push(
-      {
-        video: {
-          facingMode: { ideal: targetFacing },
-          width: { ideal: 1200 },
-          height: { ideal: 900 },
-        },
-        audio: false,
-      },
-      {
-        video: { facingMode: targetFacing },
-        audio: false,
-      },
-      {
-        video: true,
-        audio: false,
-      }
-    );
+    // Priority 2: Exact facingMode (guarantees front camera on mobile Android & iOS)
+    constraintCandidates.push({
+      video: { facingMode: { exact: targetFacing } },
+      audio: false,
+    });
+
+    // Priority 3: Direct facingMode string
+    constraintCandidates.push({
+      video: { facingMode: targetFacing },
+      audio: false,
+    });
+
+    // Priority 4: Ideal facingMode (mobile fallback without strict resolution locks)
+    constraintCandidates.push({
+      video: { facingMode: { ideal: targetFacing } },
+      audio: false,
+    });
+
+    // Priority 5: Fallback to any camera
+    constraintCandidates.push({
+      video: true,
+      audio: false,
+    });
 
     let stream: MediaStream | null = null;
     let lastError: unknown = null;
@@ -163,11 +200,32 @@ export const CameraView: React.FC<CameraViewProps> = ({
       setFallbackImage(null);
       setErrorMessage(null);
 
+      // Inspect active track settings
       try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const videoInputs = devices.filter((d) => d.kind === 'videoinput');
+        const videoTrack = stream.getVideoTracks()[0];
+        const settings = videoTrack?.getSettings?.() || {};
+
+        if (settings.deviceId) {
+          setSelectedDeviceId(settings.deviceId);
+        } else if (resolvedDeviceId) {
+          setSelectedDeviceId(resolvedDeviceId);
+        }
+
+        if (settings.facingMode) {
+          const actualFacing = settings.facingMode as 'user' | 'environment';
+          setCameraFacing(actualFacing);
+          setIsMirrored(actualFacing === 'user');
+        } else if (targetFacing === 'user') {
+          setCameraFacing('user');
+          setIsMirrored(true);
+        } else {
+          setCameraFacing('environment');
+          setIsMirrored(false);
+        }
+
+        const freshDevices = await navigator.mediaDevices.enumerateDevices();
+        const videoInputs = freshDevices.filter((d) => d.kind === 'videoinput');
         setAvailableDevices(videoInputs);
-        if (deviceId) setSelectedDeviceId(deviceId);
       } catch {
         // ignore
       }
@@ -177,7 +235,7 @@ export const CameraView: React.FC<CameraViewProps> = ({
       if (errName === 'NotAllowedError' || errName === 'PermissionDeniedError') {
         setErrorMessage('Camera blocked! Click the lock 🔒 or camera 📷 icon in your browser URL bar, choose "Allow Camera", then tap "Enable Camera".');
       } else {
-        setErrorMessage('Could not connect to camera hardware. You can upload your own photo or use our cute avatar selfies below!');
+        setErrorMessage('Could not connect to front camera. Tap "Flip Lens" or choose your camera in the menu below!');
       }
       loadSampleSelfie();
     }
@@ -257,7 +315,7 @@ export const CameraView: React.FC<CameraViewProps> = ({
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 42px "Fredoka", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('♡ SELFIE DEMO ♡', 600, 720);
+      ctx.fillText('♡ PURIKURA SELFIE DEMO ♡', 600, 720);
       ctx.font = '600 24px "Plus Jakarta Sans", sans-serif';
       ctx.fillText('Decorate with stickers & snap!', 600, 770);
 
@@ -292,15 +350,48 @@ export const CameraView: React.FC<CameraViewProps> = ({
 
   const handleFlipCamera = () => {
     soundEffects.playStickerPop();
-    const newFacing = cameraFacing === 'user' ? 'environment' : 'user';
+    const newFacing: 'user' | 'environment' = cameraFacing === 'user' ? 'environment' : 'user';
     setCameraFacing(newFacing);
-    requestCameraAccess(newFacing);
+    setIsMirrored(newFacing === 'user');
+
+    // Find matching camera from available devices if we already discovered them
+    let targetDeviceId: string | undefined = undefined;
+    if (newFacing === 'user') {
+      const front = availableDevices.find((d) => {
+        const l = (d.label || '').toLowerCase();
+        return l.includes('front') || l.includes('user') || l.includes('selfie') || l.includes('facing front');
+      });
+      if (front) targetDeviceId = front.deviceId;
+    } else {
+      const back = availableDevices.find((d) => {
+        const l = (d.label || '').toLowerCase();
+        return l.includes('back') || l.includes('rear') || l.includes('environment') || l.includes('facing back');
+      });
+      if (back) targetDeviceId = back.deviceId;
+    }
+
+    if (targetDeviceId) {
+      setSelectedDeviceId(targetDeviceId);
+    }
+    requestCameraAccess(newFacing, targetDeviceId);
   };
 
   const handleSelectDevice = (deviceId: string) => {
     soundEffects.playStickerPop();
     setSelectedDeviceId(deviceId);
-    requestCameraAccess(undefined, deviceId);
+
+    const dev = availableDevices.find((d) => d.deviceId === deviceId);
+    const label = (dev?.label || '').toLowerCase();
+    let facing: 'user' | 'environment' = cameraFacing;
+    if (label.includes('front') || label.includes('user') || label.includes('selfie') || label.includes('facing front')) {
+      facing = 'user';
+      setIsMirrored(true);
+    } else if (label.includes('back') || label.includes('rear') || label.includes('environment') || label.includes('facing back')) {
+      facing = 'environment';
+      setIsMirrored(false);
+    }
+    setCameraFacing(facing);
+    requestCameraAccess(facing, deviceId);
   };
 
   // Perform single frame capture from video or fallback image
@@ -741,7 +832,7 @@ export const CameraView: React.FC<CameraViewProps> = ({
           <div className="px-4 py-0.5 rounded-full bg-white/90 border border-pink-300 shadow-inner flex items-center gap-1.5">
             <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
             <span className="font-heading font-bold text-xs tracking-wider bg-gradient-to-r from-pink-600 to-rose-500 bg-clip-text text-transparent uppercase">
-              PHOTOBOOTH
+              Purikura Photo Studio
             </span>
             <Sparkles className="w-3.5 h-3.5 text-pink-500 animate-sparkle" />
           </div>

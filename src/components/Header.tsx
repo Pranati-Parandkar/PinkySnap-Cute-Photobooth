@@ -26,29 +26,29 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/85 backdrop-blur-md border-b border-pink-100 shadow-[0_2px_12px_rgba(244,114,182,0.08)]">
-      <div className="max-w-6xl mx-auto px-4 h-15 flex items-center justify-between">
+    <header className="sticky top-0 z-40 w-full max-w-full bg-white/90 backdrop-blur-md border-b border-pink-100 shadow-[0_2px_12px_rgba(244,114,182,0.08)] overflow-hidden">
+      <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 h-13 sm:h-15 flex items-center justify-between">
         {/* Zone 1: Brand title, one line */}
         <div 
           onClick={() => setActiveTab('camera')}
-          className="flex items-center gap-2 cursor-pointer group"
+          className="flex items-center gap-1.5 sm:gap-2 cursor-pointer group shrink-0"
         >
-          <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-pink-500 to-rose-400 flex items-center justify-center text-white shadow-sm shadow-pink-300 group-hover:scale-105 transition-transform">
-            <Heart className="w-5 h-5 fill-white" />
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-tr from-pink-500 to-rose-400 flex items-center justify-center text-white shadow-xs shadow-pink-300 group-hover:scale-105 transition-transform">
+            <Heart className="w-4 h-4 fill-white" />
           </div>
-          <span className="font-heading text-xl sm:text-2xl font-bold bg-gradient-to-r from-pink-600 to-rose-500 bg-clip-text text-transparent tracking-tight">
+          <span className="font-heading text-lg sm:text-2xl font-bold bg-gradient-to-r from-pink-600 to-rose-500 bg-clip-text text-transparent tracking-tight">
             PinkySnap
           </span>
         </div>
 
         {/* Zone 2: Navigation segmented control */}
-        <nav className="flex items-center gap-1.5 p-1 bg-pink-100/70 rounded-full border border-pink-200/60">
+        <nav className="flex items-center gap-1 p-0.5 sm:p-1 bg-pink-100/70 rounded-full border border-pink-200/60 shrink-0">
           <button
             onClick={() => {
               soundEffects.playStickerPop();
               setActiveTab('camera');
             }}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
+            className={`flex items-center gap-1 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
               activeTab === 'camera'
                 ? 'bg-white text-pink-600 shadow-sm shadow-pink-200'
                 : 'text-pink-700/80 hover:text-pink-900'
@@ -65,7 +65,7 @@ export const Header: React.FC<HeaderProps> = ({
               setActiveTab('strip');
             }}
             disabled={!hasPhotos}
-            className={`flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
+            className={`flex items-center gap-1 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
               activeTab === 'strip'
                 ? 'bg-white text-pink-600 shadow-sm shadow-pink-200'
                 : hasPhotos
@@ -74,13 +74,13 @@ export const Header: React.FC<HeaderProps> = ({
             }`}
           >
             <Sparkles className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Decorate & </span>
+            <span className="hidden md:inline">Decorate & </span>
             <span>Strip</span>
           </button>
         </nav>
 
-        {/* Zone 3: Actions (Sound & Saved Gallery) - Visible on Desktop, Moved to symmetric box on Mobile */}
-        <div className="hidden lg:flex items-center gap-2">
+        {/* Zone 3: Actions (Sound & Saved Gallery) - Strictly Desktop (lg and up - UNCHANGED) */}
+        <div className="hidden lg:flex items-center gap-2 shrink-0">
           <button
             onClick={handleToggleSound}
             title={isMuted ? 'Unmute sounds' : 'Mute sounds'}
@@ -98,7 +98,7 @@ export const Header: React.FC<HeaderProps> = ({
             className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-pink-500 to-rose-400 text-white text-xs font-semibold hover:from-pink-600 hover:to-rose-500 shadow-sm shadow-pink-300 transition-all active:scale-95"
           >
             <ImageIcon className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Gallery</span>
+            <span>Gallery</span>
             {savedCount > 0 && (
               <span className="ml-0.5 px-1.5 py-0.2 bg-white text-pink-600 font-bold text-[10px] rounded-full">
                 {savedCount}
