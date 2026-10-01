@@ -436,7 +436,7 @@ function drawBottomStripMeta(
     ctx.font = '600 16px "Plus Jakarta Sans", sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
-    ctx.fillText(`${today} · PURIKURA MEMORY`, centerX, brandY + 36);
+    ctx.fillText(`${today} · CUTE MEMORY`, centerX, brandY + 36);
     ctx.restore();
   }
 }

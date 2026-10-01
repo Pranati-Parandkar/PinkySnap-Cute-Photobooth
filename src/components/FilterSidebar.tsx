@@ -75,7 +75,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
   });
 
   return (
-    <aside className="w-full h-full flex flex-col bg-white/95 backdrop-blur-md border border-pink-200/90 rounded-3xl p-3 shadow-md overflow-hidden">
+    <aside className="w-full h-full flex flex-col bg-white/95 backdrop-blur-md border border-pink-200/90 rounded-3xl p-2 sm:p-3 shadow-md overflow-hidden">
       {/* Sidebar Header */}
       <div className="flex items-center justify-between pb-2 mb-1.5 border-b border-pink-100 px-1 shrink-0">
         <div className="flex items-center gap-1.5">
@@ -124,7 +124,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
                 soundEffects.playStickerPop();
                 onSelectFilter(filter.id);
               }}
-              className={`w-full flex items-center gap-2.5 p-2 rounded-2xl transition-all cursor-pointer text-left ${
+              className={`w-full flex items-center gap-1.5 sm:gap-2.5 p-1.5 sm:p-2 rounded-2xl transition-all cursor-pointer text-left ${
                 isSelected
                   ? 'bg-gradient-to-r from-pink-500 to-rose-400 text-white shadow-md shadow-pink-200 scale-[1.01]'
                   : 'bg-pink-50/60 hover:bg-pink-100/80 text-slate-700 border border-pink-100/80'
@@ -132,7 +132,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
             >
               {/* Filter Emoji Box */}
               <div
-                className={`w-9 h-9 rounded-xl flex items-center justify-center text-base shrink-0 shadow-inner ${
+                className={`w-7 h-7 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center text-sm sm:text-base shrink-0 shadow-inner ${
                   isSelected ? 'bg-white/20 border border-white/40' : 'bg-white border border-pink-200'
                 }`}
               >
@@ -141,10 +141,10 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
 
               {/* Title & Tagline */}
               <div className="flex-1 min-w-0">
-                <p className={`text-xs font-bold truncate leading-tight ${isSelected ? 'text-white' : 'text-pink-950'}`}>
+                <p className={`text-[11px] sm:text-xs font-bold truncate leading-tight ${isSelected ? 'text-white' : 'text-pink-950'}`}>
                   {filter.name}
                 </p>
-                <p className={`text-[10px] truncate ${isSelected ? 'text-pink-100' : 'text-pink-600/80'}`}>
+                <p className={`text-[9px] sm:text-[10px] truncate ${isSelected ? 'text-pink-100' : 'text-pink-600/80'}`}>
                   {filter.tagline}
                 </p>
               </div>

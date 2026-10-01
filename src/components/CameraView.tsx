@@ -239,7 +239,7 @@ export const CameraView: React.FC<CameraViewProps> = ({
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 42px "Fredoka", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('♡ PURIKURA SELFIE DEMO ♡', 600, 720);
+      ctx.fillText('♡ SELFIE DEMO ♡', 600, 720);
       ctx.font = '600 24px "Plus Jakarta Sans", sans-serif';
       ctx.fillText('Decorate with stickers & snap!', 600, 770);
 
@@ -555,7 +555,7 @@ export const CameraView: React.FC<CameraViewProps> = ({
           <div className="px-4 py-0.5 rounded-full bg-white/90 border border-pink-300 shadow-inner flex items-center gap-1.5">
             <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
             <span className="font-heading font-bold text-xs tracking-wider bg-gradient-to-r from-pink-600 to-rose-500 bg-clip-text text-transparent uppercase">
-              Purikura Photo Studio
+              Photo Studio
             </span>
             <Sparkles className="w-3.5 h-3.5 text-pink-500 animate-sparkle" />
           </div>
@@ -660,7 +660,7 @@ export const CameraView: React.FC<CameraViewProps> = ({
                 Enable Selfie Camera
               </h3>
               <p className="text-[11px] text-pink-200/90 max-w-xs mb-3">
-                Tap below to activate your selfie camera for real-time purikura photos!
+                Tap below to activate your selfie camera for real-time photobooth photos!
               </p>
 
               <div className="flex items-center gap-2">
